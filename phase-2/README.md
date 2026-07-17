@@ -1,116 +1,117 @@
 # Phase 2 — Live RevOps Dashboard & Campaign Intelligence
-**Contractor Foreman | July 2026**
+**SaaS Company (Construction Management) | July 2026**
+
+> Portfolio note: This write-up describes real RevOps work, with company-identifying details, customer names, colleague names, and exact internal figures removed or generalized. Numbers are rounded or shown as ranges/ratios to preserve the analytical story without exposing confidential data.
 
 ## Overview
 
 Phase 2 replaced manually updated Python/Plotly Dash dashboards with a live, team-facing analytics layer built entirely inside Zoho Analytics. It also delivered three standalone analytical projects — a competitive campaign segmentation, a no-show lead quality analysis, and a cancellation behavior dashboard — each surfacing a data gap that had been invisible to leadership.
 
-**Stack:** Zoho Analytics · Zoho CRM Reports · Python (pandas) · Ollama/Llama 3.1 · Legion Lab (Linux Mint, RTX 3060)
+**Stack:** Zoho Analytics · Zoho CRM Reports · Python (pandas) · Ollama/Llama 3.1 · local Linux workstation (RTX 3060)
 
 ---
 
-## 1. Zoho Analytics Dashboard — CF RevOps July 2026
+## 1. Zoho Analytics Dashboard — Live Team Reporting
 
-**Problem:** The Phase 1 Python dashboards required manual CSV exports and ngrok tunneling to share with the team. Leadership had no self-serve visibility into sales performance.
+**Problem:** The Phase 1 Python dashboards required manual CSV exports and tunneling to share with the team. Leadership had no self-serve visibility into sales performance.
 
-**Solution:** Built a live Zoho Analytics dashboard that syncs from Zoho CRM hourly, requiring zero manual intervention.
+**Solution:** Built a live Zoho Analytics dashboard that syncs from the CRM hourly, requiring zero manual intervention.
 
 **Reports built:**
-- **SE Leaderboard** — dual bar chart (revenue + deal count) per Sales Engineer, month-to-date, excluding Ivana Sion (onboarding) and Gustavo Ruiz Silva per business rules
-- **Trial Activations** — pie chart breaking down plan mix (monthly, annual, etc.) for all Trial Activated deals
-- **Daily Activity** — bar chart of deal activity by day of month, used for pacing
-- **Weekly Plan Mix** — stacked bar chart showing plan type distribution by week
+- **Sales Rep Leaderboard** — dual bar chart (revenue + deal count) per rep, month-to-date, with onboarding/non-selling roles excluded per business rules
+- **Trial Activations** — plan-mix breakdown for all Trial Activated deals
+- **Daily Activity** — deal activity by day of month, used for pacing
+- **Weekly Plan Mix** — stacked bar showing plan-tier distribution by week
+- **Active Trials by Channel**, **Self-Serve vs Sales-Led Trend**, **Monthly Revenue Trend**
+- **KPI summary tiles** — Closed Won, Active Trials, High-Value Plan Mix (Pro + Unlimited %)
 
-**Key technical finding:** Zoho Analytics filters on *current* stage value only — deals that progressed from Trial Activated → Closed Won during the month are excluded from Analytics counts. Zoho CRM Reports are used as source of truth for Trial Activation counts for this reason.
+**Key technical finding:** Zoho Analytics filters on *current* stage value only — deals that progressed from Trial Activated → Closed Won during the month are excluded from Analytics counts. CRM Reports are therefore used as the source of truth for stage-specific counts, while Analytics is used for trends and pacing.
 
-**Sharing:** Dashboard published via public permalink — no Zoho login required for stakeholders.
-
-**Pending additions:** No-Show Tracker card, Lead Quality Trend card, Self-Serve Channel card, KPI summary tiles.
+**Sharing:** Dashboard published via permalink for stakeholder access without a login.
 
 ---
 
-## 2. Buildertrend Competitive Campaign Segmentation
+## 2. Competitor-Switcher Campaign Segmentation
 
-**Problem:** Buildertrend (a direct competitor) raised month-to-month prices ~40% in mid-2026, triggering inbound interest from their customer base. CF had 1,311 self-identified Buildertrend leads in the CRM with no prioritization or outreach plan.
+**Problem:** A direct competitor raised prices sharply in mid-2026, triggering inbound interest from their customer base. The CRM held a large pool (~1,200) of self-identified competitor leads with no prioritization or outreach plan.
 
-**Solution:** Segmented all 1,311 leads into four tiers based on recency, deal stage, and credit card qualification status. Delivered actionable CRM saved views and campaign guidance to the sales team.
+**Solution:** Segmented the full lead pool into four tiers based on recency, deal stage, and payment-qualification status, then delivered actionable CRM saved views and campaign guidance to the sales team.
 
-**Segmentation logic:**
+**Segmentation logic (illustrative tier structure):**
 
-| Tier | Criteria | Count |
-|------|----------|-------|
-| P1 | Attempting Contact · 2024–2025 | 84 leads |
-| P2 | No CC Given · 2024–2025 | 126 leads |
-| P3 | No CC Given + Attempting Contact · 2022–2023 | 106 leads |
-| P4 | Website Cold (no stage/activity) | 485 leads |
+| Tier | Criteria | Relative size |
+|------|----------|---------------|
+| P1 | Recent · actively being worked | Smallest, highest intent |
+| P2 | Recent · no payment info yet | Small |
+| P3 | Older · previously engaged | Medium |
+| P4 | Cold website leads (no stage/activity) | Largest |
 
 **Deliverables:**
-- 3 Zoho CRM saved views (P1, P2, P3) shared live with the full sales team
-- P4 delivered as CSV for Marketing direct outreach (Martin)
-- Buildertrend Switcher Opportunity one-pager (PDF) — positioning document for SE use
-- 8-argument supporting evidence document
-- Ollama/Llama 3.1 analysis run locally on Legion Lab against the full lead dataset
+- CRM saved views for the priority tiers, shared live with the sales team
+- Cold-tier list delivered as CSV to Marketing for direct outreach
+- Competitor-switcher positioning one-pager (PDF) for rep use
+- Supporting evidence document
+- Local LLM (Ollama/Llama 3.1) analysis run against the full lead dataset on a local workstation
 
-**Outcome:** Campaign posted to sales channel. Martin (Marketing) aligned on personal email outreach strategy for cold leads. Follow-up meeting scheduled.
+**Outcome:** Campaign launched to the sales channel; Marketing aligned on an outreach strategy for cold leads.
 
 ---
 
 ## 3. No-Show Lead Quality Analysis
 
-**Problem:** Leadership observed an increase in demo no-shows but lacked data to determine whether the cause was SE-side (scheduling, follow-up) or upstream (unqualified leads reaching the calendar).
+**Problem:** Leadership observed an increase in demo no-shows but lacked data to determine whether the cause was rep-side (scheduling, follow-up) or upstream (unqualified leads reaching the calendar).
 
-**Solution:** Pulled Customer Fit Scores for all 6 July no-shows and proposed a score-based gate on the demo booking form.
+**Solution:** Pulled the qualification ("Customer Fit") scores for the period's no-shows and proposed a score-based gate on the demo booking form.
 
-**Findings:**
+**Findings (anonymized):**
 
-| Lead | SE | Customer Fit Score |
-|------|----|--------------------|
-| Kevin G | Cox | 0 |
-| Jorge Maliachi | Hernandez | 10 |
-| Brent Mason | Dominguez | 20 |
-| Deandre Drake | Neidhart | 60 |
-| Johnny Thomas | Hernandez | 60 |
-| Adam Gebelein | Amy Smith | 75 |
+| Lead | Customer Fit Score |
+|------|--------------------|
+| Lead A | 0 |
+| Lead B | 10 |
+| Lead C | 20 |
+| Lead D | 60 |
+| Lead E | 60 |
+| Lead F | 75 |
 
-3 of 6 no-shows scored 20 or below — filtering failures that should not have reached the calendar. 3 scored 60+ and represent legitimate no-shows (a separate problem).
+Half of the no-shows scored 20 or below — filtering failures that arguably should not have reached the calendar. The remainder scored 60+ and represent legitimate no-shows (a separate, rep-side problem).
 
-**Proposal:** Minimum Customer Fit Score threshold of 30 on the booking form. Leads below threshold receive a "we'll be in touch" response; SE or SDR decides whether to manually book. Submitted to leadership.
+**Proposal:** A minimum qualification-score threshold on the booking form. Leads below threshold receive a hold response; a rep decides whether to manually book. Submitted to leadership.
 
-**Caveat documented:** No-show count is likely understated — tracker accuracy depends on SEs consistently updating the Demo Status field in CRM.
+**Caveat documented:** No-show counts are likely understated — tracker accuracy depends on reps consistently updating the demo-status field. (A CRM automation was later implemented to auto-populate this field and close the gap.)
 
-**Infrastructure built:** No-Show Tracker report in Zoho CRM Reports with Customer Fit Score column added for ongoing monitoring.
+**Infrastructure built:** A No-Show Tracker report in CRM Reports with the qualification-score column added for ongoing monitoring.
 
 ---
 
-## 4. Churnkey Cancellation Dashboard — June 2026
+## 4. Cancellation Behavior Dashboard
 
-**Problem:** Cancellation data existed across three disconnected systems (Paddle, Churnkey, Zoho Accounts) with no unified view. Leadership had no visibility into *why* customers cancelled or how June compared to May.
+**Problem:** Cancellation data lived across three disconnected systems with no unified view. Leadership had no visibility into *why* customers cancelled or how the current month compared to the prior one.
 
-**Solution:** Analyzed the June Churnkey export and built an HTML dashboard with a May vs. June side-by-side comparison, delivered to the CS/Onboarding team.
+**Solution:** Analyzed the monthly cancellation export and built an HTML dashboard with a month-over-month comparison, delivered to the CS/Onboarding team.
 
-**June findings:**
-- 201 cancellations — all trialing customers (zero paying subscribers cancelled)
-- 111 aborts — customers who started the cancel flow and backed out (untapped save opportunity)
-- 21 trial extensions — the only active save mechanism; nearly doubled from May (11 → 21)
-- "Couldn't Figure It Out" up 6 points MoM (16% → 22%) — growing onboarding signal
-- "Budget" cancellations down (39% → 30%), consistent with May finding that only ~26% of budget-labeled cancels are genuinely price-related
+**Findings (illustrative):**
+- Cancellations were concentrated almost entirely among trialing customers, not paying subscribers
+- A large share of customers started the cancel flow and backed out — an untapped save opportunity
+- Trial extensions (the main active save mechanism) nearly doubled month-over-month
+- "Couldn't figure it out" rose several points MoM — a growing onboarding signal
+- Budget-labeled cancellations declined MoM
 
-**Prior finding (May):** Manual review of cancel feedback text showed 74% of "Doesn't Fit My Budget" cancellations were actually product fit issues, vague responses, or competitor losses — not genuine budget constraints.
+**Prior finding:** Manual review of cancel-reason free text showed that only ~1 in 4 "budget" cancellations were genuinely price-related — the rest were product-fit issues, vague responses, or competitor losses. This reframed how the team interpreted the cancellation reason field.
 
 ---
 
 ## Business Rules (applied across all Phase 2 reports)
 
-- **"New Trial"** stage = Ivana Sion's onboarding handoff stage. Not an SE performance metric. Ivana excluded from all SE leaderboards and Closed Won reports.
-- **"Trial Activated"** stage = SE-closed deals entering trial. Source of SE performance data.
-- **Gustavo Ruiz Silva** excluded from all SE reporting.
-- **Zoho CRM Reports** = source of truth for Trial Activation counts (Analytics undercounts due to stage-filter limitation).
-- **Self-Serve channel** (Amy Smith + Juan Balderas) tracked separately from SE-assisted deals.
+- **"New Trial"** stage = an onboarding handoff stage, not a sales-performance metric. Onboarding roles are excluded from all rep leaderboards and Closed Won reports.
+- **"Trial Activated"** stage = rep-closed deals entering trial. This is the source of rep-performance data.
+- **CRM Reports** = source of truth for stage-specific counts (Analytics undercounts due to a current-stage filter limitation).
+- **Self-Serve channel** is tracked separately from sales-assisted deals.
 
 ---
 
 ## Phase 1 → Phase 2 Transition
 
-Python/Plotly Dash dashboards (cf-revops.ngrok.app, cf-mason.ngrok.app, cf-industry.ngrok.app) scheduled for retirement at July 2026 month-end. All reporting moving to Zoho Analytics for live, zero-maintenance team access.
+The Phase 1 Python/Plotly Dash dashboards (served via local tunnels) are scheduled for retirement at month-end, with all reporting moving to Zoho Analytics for live, zero-maintenance team access.
 
 See [`/phase-1`](../phase-1) for the Python dashboard code and Phase 1 deliverables.
